@@ -10,4 +10,4 @@ The following were used:
     Mongoose for the database implementation.
     jsonWebToken and Bcrypt for encrypting the user validation key.
 Things to take note of:
-    npm run dev for initiating nodemon process
+    `npm run dev` for initiating nodemon process.
