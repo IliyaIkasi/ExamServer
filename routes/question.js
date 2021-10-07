@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const mongoose = require('mongoose');
 const { Question, validate } = require('../models/questions');
 const express = require('express');
@@ -23,10 +24,12 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params
     try {
         const allQuestions = await Question.find({ subjectId: id });
+        const countQuestions = await Question.count({subjectId: id });
         if (!allQuestions) return res.status(404).json({
-            message: "not found"
+            message: "File Not Found"
         })
         return res.status(200).json({
+            questions: countQuestions,
             questions: allQuestions
         });
     } catch (error) {
@@ -35,7 +38,7 @@ router.get('/:id', async (req, res) => {
     // gets the subject id and displays all questions relating to the id.
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const { subjectId, description, A, B, C, D, isCorrect } = req.body;
     try {
         const { error } = validate(req.body);
@@ -51,7 +54,10 @@ router.post('/', async (req, res) => {
         });
         question = await question.save();
 
-        return res.status(200).send(question);
+        return res.status(200).json({
+            message: "Added Successfully",
+            question
+        });
 
     } catch (error) {
         console.log(error.message);
@@ -62,7 +68,7 @@ router.post('/', async (req, res) => {
     // post adds questions into a specific subject using the subjectId.
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     const _id = req.params.id
     const { subjectId, description, A, B, C, D, isCorrect } = req.body;
     try {
@@ -95,7 +101,7 @@ router.put('/:id', async (req, res) => {
     // updates a question using the questionId.
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const _id = req.params.body;
         const question = await Question.findByIdAndDelete(_id);

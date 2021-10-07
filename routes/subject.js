@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const { Subject, validate } = require('../models/subjects');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -10,7 +11,7 @@ router.get('/', async (req, res) => {
         subjects});
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const { error } = validate(req.body);
         if (error) return res.status(400).json({ error: error.details[0].message });
@@ -29,7 +30,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     const _id = req.params.id;
     const { subjectName } = req.body;
 
@@ -57,7 +58,7 @@ router.put('/:id', async (req, res) => {
     };
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const subject = await Subject.findByIdAndRemove(req.params.id);
     
